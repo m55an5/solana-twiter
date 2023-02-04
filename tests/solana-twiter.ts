@@ -14,7 +14,7 @@ describe("solana-twiter", () => {
     // Before sending the transaction to the blockchain.
     const tweet = anchor.web3.Keypair.generate();
 
-    await program.rpc.sendTweet('ODROW', 'cuto ha', {
+    await program.rpc.sendTweet('odrow', 'cuto ha', {
         accounts: {
             tweet: tweet.publicKey,
             author: anchor.AnchorProvider.env().wallet.publicKey,
@@ -30,7 +30,7 @@ describe("solana-twiter", () => {
 
     // Ensure it has the right data.
     assert.equal(tweetAccount.author.toBase58(), anchor.AnchorProvider.env().wallet.publicKey.toBase58());
-    assert.equal(tweetAccount.topic, 'ODROW');
+    assert.equal(tweetAccount.topic, 'odrow');
     assert.equal(tweetAccount.content, 'cuto ha');
     assert.ok(tweetAccount.timestamp);
   });
@@ -62,7 +62,7 @@ describe("solana-twiter", () => {
     const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
     await program.provider.connection.confirmTransaction(signature);
 
-    await program.rpc.sendTweet('New Author', 'new suthors tweet', {
+    await program.rpc.sendTweet('new-author', 'new suthors tweet', {
         accounts: {
           tweet: tweet.publicKey,
           author: otherUser.publicKey,
@@ -75,7 +75,7 @@ describe("solana-twiter", () => {
 
     const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
     assert.equal(tweetAccount.author.toBase58(), otherUser.publicKey.toBase58());
-    assert.equal(tweetAccount.topic, 'New Author');
+    assert.equal(tweetAccount.topic, 'new-author');
     assert.equal(tweetAccount.content, 'new suthors tweet');
     assert.ok(tweetAccount.timestamp);
   });
@@ -143,7 +143,7 @@ describe("solana-twiter", () => {
     // we can't just give 'ODROW' as a string to the bytes property. It needs to 
     // be a base-58 encoded array of bytes. To do this, we first need to 
     // convert our string to a buffer which we can then encode in base 58.
-    const topicBuffer = Buffer.from("ODROW");
+    const topicBuffer = Buffer.from("odrow");
     const encodeTopic = bs58.encode(topicBuffer);
     const tweetAccounts = await program.account.tweet.all([
       {
@@ -159,7 +159,7 @@ describe("solana-twiter", () => {
 
     assert.equal(tweetAccounts.length, 1);
     assert.ok(tweetAccounts.every(tweetAccount => {
-      return tweetAccount.account.topic === "ODROW"
+      return tweetAccount.account.topic === "odrow"
     }));
   });
 
