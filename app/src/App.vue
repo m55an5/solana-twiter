@@ -27,6 +27,7 @@ initWorkspace()
             <header class="flex space-x-6 items-center justify-between px-8 py-4 border-b">
                 <div class="text-xl font-bold" v-text="route.name"></div>
             </header>
+            <!--  Any page that matches current URL will be rendered where <router-view> -->
             <router-view></router-view>
         </main>
     </div>

@@ -10,6 +10,21 @@ describe("solana-twiter", () => {
 
   const program = anchor.workspace.SolanaTwiter as Program<SolanaTwiter>;
 
+  const sendTweet = async (author, topic, content) => {
+    const tweet = anchor.web3.Keypair.generate();
+    await program.rpc.sendTweet(topic, content, {
+        accounts: {
+            tweet: tweet.publicKey,
+            author,
+            systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [tweet],
+    });
+
+    return tweet
+}
+
+
   it('can send a new tweet', async () => {
     // Before sending the transaction to the blockchain.
     const tweet = anchor.web3.Keypair.generate();
@@ -161,6 +176,52 @@ describe("solana-twiter", () => {
     assert.ok(tweetAccounts.every(tweetAccount => {
       return tweetAccount.account.topic === "odrow"
     }));
+  });
+
+  it('can update a tweet', async () => {
+    const author = anchor.AnchorProvider.env().wallet.publicKey;
+    const tweet = await sendTweet(author, 'web2', 'Hello World!');
+    const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
+
+    // Ensure it has the right data.
+    assert.equal(tweetAccount.topic, 'web2');
+    assert.equal(tweetAccount.content, 'Hello World!');
+
+    // Update the Tweet.
+    await program.rpc.updateTweet('solana', 'gm everyone!', {
+      accounts: {
+          tweet: tweet.publicKey,
+          author,
+      },
+    });
+
+    // Ensure it has the right data.
+    const updatedAccount = await program.account.tweet.fetch(tweet.publicKey);
+    assert.equal(updatedAccount.topic, 'solana');
+    assert.equal(updatedAccount.content, 'gm everyone!');
+
+  });
+
+  it('cannot update others tweet', async () => {
+    const author = anchor.AnchorProvider.env().wallet.publicKey;
+    const tweet = await sendTweet(author, 'solana', 'Hello Sol');
+   
+    // Update the Tweet.
+    try {
+      await program.rpc.updateTweet('sol', 'gm sols', {
+        accounts: {
+            tweet: tweet.publicKey,
+            author: anchor.web3.Keypair.generate().publicKey,
+        },
+      });
+      assert.fail('We were able to update someone else\'s tweet.');
+    } catch (error) {
+      // Ensure it has the right data.
+      const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
+      assert.equal(tweetAccount.topic, 'solana');
+      assert.equal(tweetAccount.content, 'Hello Sol');
+    }
+
   });
 
 });

@@ -10,6 +10,8 @@ const props = defineProps({
 })
 const { forcedTopic } = toRefs(props)
 
+console.log("------------TS-----------",forcedTopic.value)
+
 // Form data.
 const content = ref('')
 const topic = ref('')

@@ -3,7 +3,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-solana_twiter = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+solana_twiter = "6ar8YVWcscGV93PfEdkT2R67Np7TAxwtAX7mD6wtQJeK"
 
 [programs.devnet]
 solana_twiter = "6ar8YVWcscGV93PfEdkT2R67Np7TAxwtAX7mD6wtQJeK"

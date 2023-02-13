@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 
 export const useSlug = text => {
+    console.log("useSlug called------")
     return computed(() => {
         return (text.value || '')
             .toLowerCase()
